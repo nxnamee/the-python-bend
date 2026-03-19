@@ -1,11 +1,10 @@
 """Игра «Изгиб Питона» — классическая змейка на Pygame с использованием ООП."""
 
 import sys
-from random import randint, choice
+import random
 
 import pygame
 
-# --- Константы ---
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
@@ -25,7 +24,6 @@ SPEED = 20
 
 CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
-# --- Инициализация Pygame ---
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Изгиб Питона')
@@ -49,7 +47,7 @@ class GameObject:
         self.body_color = body_color
 
     def draw(self):
-        """Абстрактный метод отрисовки объекта. Переопределяется в потомках."""
+        """Абстрактный метод отрисовки. Переопределяется в потомках."""
         pass
 
 
@@ -69,13 +67,13 @@ class Apple(GameObject):
         """Устанавливает случайную позицию яблока в пределах поля.
 
         Args:
-            occupied: Список позиций, которые нельзя занимать (тело змейки).
+            occupied: Список позиций, которые нельзя занимать.
         """
         occupied = occupied or []
         while True:
             position = (
-                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
+                random.randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                random.randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
             )
             if position not in occupied:
                 self.position = position
@@ -132,7 +130,6 @@ class Snake(GameObject):
             (head_y + dy * GRID_SIZE) % SCREEN_HEIGHT,
         )
 
-        # Столкновение с собой (игнорируем голову и шею)
         if new_head in self.positions[2:]:
             self.reset()
             return
@@ -146,19 +143,20 @@ class Snake(GameObject):
 
     def draw(self):
         """Отрисовывает змейку и затирает след последнего сегмента."""
-        # Затираем след хвоста
         if self.last:
             last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
-        # Рисуем голову
-        head_rect = pygame.Rect(self.get_head_position(), (GRID_SIZE, GRID_SIZE))
+        head_rect = pygame.Rect(
+            self.get_head_position(), (GRID_SIZE, GRID_SIZE)
+        )
         pygame.draw.rect(screen, self.body_color, head_rect)
         pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
 
-        # Рисуем второй сегмент (перекрываем старую голову)
         if len(self.positions) > 1:
-            second_rect = pygame.Rect(self.positions[1], (GRID_SIZE, GRID_SIZE))
+            second_rect = pygame.Rect(
+                self.positions[1], (GRID_SIZE, GRID_SIZE)
+            )
             pygame.draw.rect(screen, self.body_color, second_rect)
             pygame.draw.rect(screen, BORDER_COLOR, second_rect, 1)
 
@@ -170,7 +168,7 @@ class Snake(GameObject):
         """
         self.length = 1
         self.positions = [CENTER]
-        self.direction = choice([UP, DOWN, LEFT, RIGHT])
+        self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
         self.next_direction = None
         screen.fill(BOARD_BACKGROUND_COLOR)
 
@@ -216,7 +214,6 @@ def main():
         snake.update_direction()
         snake.move()
 
-        # Змейка съела яблоко
         if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position(occupied=snake.positions)
