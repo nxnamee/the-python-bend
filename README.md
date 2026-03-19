@@ -1,3 +1,10 @@
-git add README.md
-git commit -m "docs: add README"
-git push
+# 🐍 Изгиб Питона
+
+Классическая игра «Змейка» на Python + Pygame.
+
+## Запуск
+pip install pygame
+python the_python_bend.py
+
+## Управление
+Стрелки на клавиатуре
